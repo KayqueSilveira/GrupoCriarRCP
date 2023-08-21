@@ -1,17 +1,16 @@
 package com.grupo.criar.RCP.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 @Data
+@Entity
 public class Race {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "hour")
     private LocalTime hour;
     private int lapNumber;
     private LocalTime lapTime;
