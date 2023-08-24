@@ -18,6 +18,6 @@ public class PositionController {
     @GetMapping("/position")
     public List<Position> getPosition () {
         var listPilot = pilotService.findAll();
-        return positionService.PilotPosition(listPilot);
+        return positionService.GetPilotPosition(listPilot);
     }
 }

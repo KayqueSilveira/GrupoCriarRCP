@@ -1,5 +1,6 @@
 package com.grupo.criar.RCP.Service;
 
+import com.grupo.criar.RCP.Exceptions.DataProcessingException;
 import com.grupo.criar.RCP.Models.Pilot;
 import com.grupo.criar.RCP.Models.Race;
 import org.springframework.stereotype.Service;
@@ -54,25 +55,27 @@ public class ReadTxtRace {
             }
             return listPilot;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new DataProcessingException("Error loading race data", e);
         }
     }
 
     private LocalTime converter(String data) {
+        try {
+            String[] parts = data.split(":");
+            int minutes = Integer.parseInt(parts[0]);
+            String[] secondsParts = parts[1].split("\\.");
+            int seconds = Integer.parseInt(secondsParts[0]);
+            int milli = Integer.parseInt(secondsParts[1]);
+            long nanoseconds = milli * 1_000_000;
 
-        String[] parts = data.split(":");
-        int minutes = Integer.parseInt(parts[0]);
-        String[] secondsParts = parts[1].split("\\.");
-        int seconds = Integer.parseInt(secondsParts[0]);
-        int milli = Integer.parseInt(secondsParts[1]);
-        long nanoseconds = milli * 1_000_000;
+            LocalTime localTime = LocalTime.MIDNIGHT
+                    .plus(minutes, ChronoUnit.MINUTES)
+                    .plus(seconds, ChronoUnit.SECONDS)
+                    .plusNanos(nanoseconds);
 
-        LocalTime localTime = LocalTime.MIDNIGHT
-                .plus(minutes, ChronoUnit.MINUTES)
-                .plus(seconds, ChronoUnit.SECONDS)
-                .plusNanos(nanoseconds);
-
-        return localTime;
+            return localTime;
+        } catch (Exception e) {
+            throw new DataProcessingException("Error converting time", e);
+        }
     }
-
 }
