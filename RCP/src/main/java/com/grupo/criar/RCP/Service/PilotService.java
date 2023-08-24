@@ -1,5 +1,7 @@
 package com.grupo.criar.RCP.Service;
 
+import com.grupo.criar.RCP.Models.Dto.PilotDto;
+import com.grupo.criar.RCP.Models.Dto.RaceDto;
 import com.grupo.criar.RCP.Models.Pilot;
 import com.grupo.criar.RCP.Models.Race;
 import com.grupo.criar.RCP.Repository.PilotRepository;
@@ -7,6 +9,7 @@ import com.grupo.criar.RCP.Service.impl.PilotServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,28 +23,81 @@ public class PilotService implements PilotServiceImpl {
     @Autowired
     private RaceService raceService;
 
-    @Override
-    public List<Pilot> getPilot() {
+    public List<Pilot> findAll() {
         return pilotRepository.findAll();
     }
 
-    @Override
-    public Pilot getPilotByName(String name) throws Exception {
-        return pilotRepository.findByName(name).orElseThrow(() -> new Exception("Piloto não encontrado"));
+    public List<PilotDto> getAllPilot(List<Pilot> pilots) {
+        List<PilotDto> listPilotDto = new ArrayList<>();
+
+        for (Pilot pilot : pilots) {
+            PilotDto pilotDto = new PilotDto();
+            pilotDto.setId(pilot.getId());
+            pilotDto.setName(pilot.getName());
+
+            List<Race> races = pilot.getRace();
+            List<RaceDto> listRaceDto = new ArrayList<>();
+
+            for (Race race : races) {
+                RaceDto raceDto = new RaceDto();
+                raceDto.setId(race.getId());
+                raceDto.setHour(race.getHour());
+                raceDto.setLapNumber(race.getLapNumber());
+                raceDto.setLapTime(race.getLapTime());
+                raceDto.setAverageSpeed(race.getAverageSpeed());
+
+                listRaceDto.add(raceDto);
+            }
+
+            pilotDto.setRaces(listRaceDto);
+            listPilotDto.add(pilotDto);
+        }
+
+        return listPilotDto;
+    }
+
+    public PilotDto getPilot(final String name) {
+
+        var pilot = pilotRepository.findByName(name);
+
+        PilotDto pilotDto = new PilotDto();
+        pilotDto.setId(pilot.get().getId());
+        pilotDto.setName(pilot.get().getName());
+
+        List<Race> races = pilot.get().getRace();
+        List<RaceDto> listRaceDto = new ArrayList<>();
+
+        for (Race race : races) {
+            RaceDto raceDto = new RaceDto();
+            raceDto.setId(race.getId());
+            raceDto.setHour(race.getHour());
+            raceDto.setLapNumber(race.getLapNumber());
+            raceDto.setLapTime(race.getLapTime());
+            raceDto.setAverageSpeed(race.getAverageSpeed());
+
+            listRaceDto.add(raceDto);
+        }
+
+        pilotDto.setRaces(listRaceDto);
+
+        return pilotDto;
     }
 
     @Override
-    public List<Pilot> Add_File_To_Pilot() {
-        var pilots = readTxtRace.Add_File_To_Pilot();
+    public List<Pilot> SavePilotRace() {
+        var pilots = readTxtRace.LoadFileRace();
 
         for (Pilot pilot : pilots) {
-            Race race = new Race();
-            race = pilot.getRace();
-            raceService.save(race);
-            pilotRepository.saveAndFlush(pilot);
+            List<Race> races = pilot.getRace();
+
+            pilotRepository.save(pilot);
+
+            for (Race race : races) {
+                race.setPilot(pilot);
+                raceService.save(race);
+            }
         }
 
         return pilots;
     }
-
 }
