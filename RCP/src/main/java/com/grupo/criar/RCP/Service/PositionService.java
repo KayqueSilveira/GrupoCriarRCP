@@ -87,7 +87,7 @@ public class PositionService implements PositionServiceImpl {
             }
             return listPosition;
         } catch (Exception e) {
-            throw new DataProcessingException("Error processing pilot positions", e);
+            throw new DataProcessingException("Error processing calculate hour: ", e);
         }
     }
 
@@ -107,7 +107,7 @@ public class PositionService implements PositionServiceImpl {
             }
             return listPosition;
         } catch (Exception e) {
-            throw new DataProcessingException("Error processing pilot positions", e);
+            throw new DataProcessingException("Error processing calculate between times win: ", e);
         }
     }
 
@@ -123,7 +123,7 @@ public class PositionService implements PositionServiceImpl {
 
             return result;
         } catch (Exception e) {
-            throw new DataProcessingException("Error processing pilot positions", e);
+            throw new DataProcessingException("Error processing between times: ", e);
         }
     }
 
