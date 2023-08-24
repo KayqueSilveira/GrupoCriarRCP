@@ -13,16 +13,17 @@ import java.util.List;
 @Service
 public class ReadTxtRace {
 
-    public List<Pilot> Add_File_To_Pilot() {
-
+    public List<Pilot> LoadFileRace() {
         List<Pilot> listPilot = new ArrayList<>();
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("C:\\Users\\kayqu\\OneDrive\\Área de Trabalho\\desafio tecnico\\GrupoCriarRCP\\RCP\\src\\main\\java\\com\\grupo\\criar\\RCP\\Utils\\race.txt"), StandardCharsets.UTF_8))) {
-            String linha;
-            while ((linha = br.readLine()) != null) {
+            String line;
+
+            while ((line = br.readLine()) != null) {
                 Pilot pilot = new Pilot();
                 Race race = new Race();
 
-                String[] parts = linha.split(" ");
+                String[] parts = line.split(" ");
                 if (parts.length <= 9) {
                     String hourStr = parts[0];
                     String idStr = parts[1];
@@ -37,38 +38,39 @@ public class ReadTxtRace {
                     LocalTime lapTime = converter(lapTimeStr);
                     double averageSpeed = Double.parseDouble(averageSpeedStr);
 
+                    pilot.setId(id);
+                    pilot.setName(name);
+
                     race.setHour(hour);
                     race.setLapNumber(lapNumber);
                     race.setLapTime(lapTime);
                     race.setAverageSpeed(averageSpeed);
-                    pilot.setRace(race);
-                    pilot.setId(id);
-                    pilot.setName(name);
+
+                    race.setPilot(pilot);
+                    pilot.getRace().add(race);
+
+                    listPilot.add(pilot);
                 }
-                listPilot.add(pilot);
             }
-                return listPilot;
-            } catch (IOException e) {
+            return listPilot;
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private LocalTime converter(String data) {
 
         String[] parts = data.split(":");
-        int minutos = Integer.parseInt(parts[0]);
-        String[] segundosParts = parts[1].split("\\.");
-        int segundos = Integer.parseInt(segundosParts[0]);
-        int milissegundos = Integer.parseInt(segundosParts[1]);
-        // Converter milissegundos em nanossegundos
-        long nanossegundos = milissegundos * 1_000_000;
+        int minutes = Integer.parseInt(parts[0]);
+        String[] secondsParts = parts[1].split("\\.");
+        int seconds = Integer.parseInt(secondsParts[0]);
+        int milli = Integer.parseInt(secondsParts[1]);
+        long nanoseconds = milli * 1_000_000;
 
-        // Criar um LocalTime com horas zeradas e acrescentar os minutos, segundos e nanossegundos
         LocalTime localTime = LocalTime.MIDNIGHT
-                .plus(minutos, ChronoUnit.MINUTES)
-                .plus(segundos, ChronoUnit.SECONDS)
-                .plusNanos(nanossegundos);
+                .plus(minutes, ChronoUnit.MINUTES)
+                .plus(seconds, ChronoUnit.SECONDS)
+                .plusNanos(nanoseconds);
 
         return localTime;
     }
