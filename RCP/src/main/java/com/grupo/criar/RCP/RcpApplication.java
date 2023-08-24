@@ -9,5 +9,5 @@ public class RcpApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(RcpApplication.class, args);
 	}
-
 }
+
