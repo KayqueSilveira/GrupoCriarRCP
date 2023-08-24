@@ -10,6 +10,9 @@ public class Race {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @ManyToOne
+    @JoinColumn(name = "pilot_id")
+    private Pilot pilot;
     @Column(name = "hour")
     private LocalTime hour;
     private int lapNumber;
