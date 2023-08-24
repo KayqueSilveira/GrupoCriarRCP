@@ -1,5 +1,7 @@
 package com.grupo.criar.RCP.Service;
 
+import com.grupo.criar.RCP.Exceptions.DataProcessingException;
+import com.grupo.criar.RCP.Exceptions.NotFoundException;
 import com.grupo.criar.RCP.Models.Dto.PilotDto;
 import com.grupo.criar.RCP.Models.Dto.RaceDto;
 import com.grupo.criar.RCP.Models.Pilot;
@@ -58,13 +60,14 @@ public class PilotService implements PilotServiceImpl {
 
     public PilotDto getPilot(final String name) {
 
-        var pilot = pilotRepository.findByName(name);
+        var pilot = pilotRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("Pilot not found with name: " + name));
 
         PilotDto pilotDto = new PilotDto();
-        pilotDto.setId(pilot.get().getId());
-        pilotDto.setName(pilot.get().getName());
+        pilotDto.setId(pilot.getId());
+        pilotDto.setName(pilot.getName());
 
-        List<Race> races = pilot.get().getRace();
+        List<Race> races = pilot.getRace();
         List<RaceDto> listRaceDto = new ArrayList<>();
 
         for (Race race : races) {
@@ -85,19 +88,23 @@ public class PilotService implements PilotServiceImpl {
 
     @Override
     public List<Pilot> SavePilotRace() {
-        var pilots = readTxtRace.LoadFileRace();
+        try {
+            var pilots = readTxtRace.LoadFileRace();
 
-        for (Pilot pilot : pilots) {
-            List<Race> races = pilot.getRace();
+            for (Pilot pilot : pilots) {
+                List<Race> races = pilot.getRace();
 
-            pilotRepository.save(pilot);
+                pilotRepository.save(pilot);
 
-            for (Race race : races) {
-                race.setPilot(pilot);
-                raceService.save(race);
+                for (Race race : races) {
+                    race.setPilot(pilot);
+                    raceService.save(race);
+                }
             }
-        }
 
-        return pilots;
+            return pilots;
+        } catch (Exception e) {
+            throw new DataProcessingException("Error processing pilot data", e);
+        }
     }
 }

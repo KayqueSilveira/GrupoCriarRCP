@@ -5,6 +5,6 @@ import com.grupo.criar.RCP.Models.Dto.Position;
 
 import java.util.List;
 public interface PositionServiceImpl {
-    List<Position> PilotPosition(List<Pilot> pilots);
+    List<Position> GetPilotPosition(List<Pilot> pilots);
 
 }
