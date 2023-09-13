@@ -88,9 +88,9 @@ public class ProofService implements ProofServiceImpl {
 
     private LocalTime calcularMelhorTempo(List<LocalTime> tempos) {
 
-        LocalTime melhorTempo = Collections.min(tempos, Comparator.comparing(LocalTime::toSecondOfDay));
+        LocalTime melhorTempos = Collections.min(tempos, Comparator.comparing(LocalTime::toSecondOfDay));
 
-        return melhorTempo;
+        return melhorTempos;
     }
 
 
