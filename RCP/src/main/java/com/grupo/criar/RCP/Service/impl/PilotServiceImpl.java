@@ -14,4 +14,6 @@ public interface PilotServiceImpl {
     List<PilotDto> getAllPilot(List<Pilot> pilots);
 
     PilotDto getPilot(final String name);
+
+    Pilot findById(long id);
 }

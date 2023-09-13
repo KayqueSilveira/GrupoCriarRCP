@@ -87,6 +87,11 @@ public class PilotService implements PilotServiceImpl {
     }
 
     @Override
+    public Pilot findById(long id) {
+        return pilotRepository.findById(id).orElseThrow(() -> new NotFoundException("Not found for id: " +id));
+    }
+
+    @Override
     public List<Pilot> SavePilotRace() {
         try {
             var pilots = readTxtRace.LoadFileRace();
